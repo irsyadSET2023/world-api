@@ -1,36 +1,22 @@
 import GoogleMapReact from "google-map-react";
 import { Fragment, useState } from "react";
-/* <form action="">
-                    <select action="">
-                      {fetchData.map((country, index) => (
-                        <option value={country.name}>{country.name}</option>
-                      ))}
-                    </select>
-                  </form> */
+import { getAllCountryData, getCountryData } from "./utils/api";
 
 function App() {
   const [fetchAllCountryState, setFetchAllCountryState] = useState("pending");
   const [fetchAllCountryData, setFetchAllCountryData] = useState(undefined);
 
-  const handleFetchData = () => {
-    setFetchAllCountryState("loading");
-
-    fetch(
-      "https://raw.githubusercontent.com/dr5hn/countries-states-cities-database/master/countries%2Bstates%2Bcities.json"
-    )
-      .then((res) => {
-        // res.json();
-        console.log(res);
-        return res.json();
-      })
-      .then((data) => {
-        console.log(data);
-        setFetchAllCountryState("success");
-        setFetchAllCountryData(data);
-      })
-      .catch((error) => {
-        setFetchAllCountryState("error");
-      });
+  const handleFetchData = async () => {
+    try {
+      setFetchAllCountryState("loading");
+      const data = await getAllCountryData();
+      setFetchAllCountryData(data.data);
+      setFetchAllCountryState("success");
+      console.log(data.data);
+    } catch (error) {
+      console.log(error);
+      setFetchAllCountryState("error");
+    }
   };
 
   return (
@@ -102,21 +88,17 @@ const Row = ({ country, index }) => {
   const [fetchCountryState, setFetchCountryState] = useState("pending");
   const [fetchedData, setFetchData] = useState(undefined);
 
-  const handleKnowMore = (country) => {
-    console.log("hit");
-    setFetchCountryState("loading");
-    fetch(`https://restcountries.com/v3.1/name/${country}`)
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        setFetchData(data);
-        setFetchCountryState("success");
-      })
-      .catch((error) => {
-        console.log(error);
-        setFetchData(undefined);
-        setFetchCountryState("pending");
-      });
+  const handleKnowMore = async (country) => {
+    try {
+      setFetchCountryState("loading");
+      const data = await getCountryData(country);
+      console.log(data);
+      setFetchData(data.data);
+      setFetchCountryState("success");
+    } catch (error) {
+      setFetchData(undefined);
+      setFetchCountryState("pending");
+    }
   };
   return (
     <>
